@@ -1,0 +1,18 @@
+# PyInstaller 打包产物
+build/
+dist/
+*.exe
+*.manifest
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+
+# 编辑器 / 系统
+.vscode/
+.idea/
+Thumbs.db
+desktop.ini
