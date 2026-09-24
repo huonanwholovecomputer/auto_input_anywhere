@@ -3,6 +3,8 @@
 在桌面创建 input.txt，用户写入内容后回到控制台输入 y，
 脚本等待 3 秒，读取文件内容并模拟键盘输入到当前光标所在的输入框。
 
+启动时先选择输入速度：1 极速 / 2 保守。
+
 【Unicode 直发版】
 所有字符都通过 SendInput 的 Unicode 模式直接发送，完全绕过输入法：
 不需要切换中英文，不依赖输入法选词（没有同音词/多音字问题），也不使用剪贴板。
@@ -27,11 +29,17 @@ except Exception:
     pass
 
 
-# ============== 配置 ==============
-# 每个字符之间的间隔（秒）。目标程序丢字就调大
-KEY_DELAY = 0.04
-# 换行后的等待时间
-ENTER_DELAY = 0.05
+# ============== 速度档位 ==============
+# 每次运行程序时手动选择。值分别是（每个字符之间的间隔秒，换行后的等待秒）。
+# 目标程序丢字就换更慢的档位。
+SPEED_PRESETS = {
+    "1": ("极速", 0.01, 0.015),
+    "2": ("保守", 0.04, 0.05),
+}
+
+# 下面两个变量由 choose_speed() 在启动时按选择填入，输入函数直接读它们
+KEY_DELAY = 0.01
+ENTER_DELAY = 0.015
 # ==================================
 
 user32 = ctypes.WinDLL("user32", use_last_error=True)
@@ -194,9 +202,34 @@ def read_file(path, retries=5):
 
 
 # ---------- 主流程 ----------
+def choose_speed():
+    global KEY_DELAY, ENTER_DELAY
+
+    print("请选择输入速度：")
+    print("   1) 极速  (每字 0.01 秒，换行 0.015 秒)")
+    print("   2) 保守  (每字 0.04 秒，换行 0.05 秒)")
+
+    while True:
+        try:
+            cmd = input("\n速度 [1/2] >>> ").strip().lower()
+        except (EOFError, KeyboardInterrupt):
+            print("\n已退出")
+            return False
+
+        if cmd in SPEED_PRESETS:
+            name, KEY_DELAY, ENTER_DELAY = SPEED_PRESETS[cmd]
+            print(f"✅ 已选择「{name}」：每字 {KEY_DELAY} 秒，换行 {ENTER_DELAY} 秒")
+            return True
+
+        print("请输入 1 或 2")
+
+
 def main():
     path = create_input_file()
 
+    print("=" * 56)
+    if not choose_speed():
+        return
     print("=" * 56)
     print(f"📄  文件位置: {path}")
     print("   1) 在该文件里写入你要输入的内容并保存 (Ctrl+S)")

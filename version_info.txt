@@ -3,8 +3,8 @@
 # 修改版本号时，filevers/prodvers 元组和下面的字符串要一起改。
 VSVersionInfo(
     ffi=FixedFileInfo(
-        filevers=(0, 1, 0, 0),
-        prodvers=(0, 1, 0, 0),
+        filevers=(0, 2, 0, 0),
+        prodvers=(0, 2, 0, 0),
         mask=0x3F,
         flags=0x0,
         OS=0x40004,
@@ -23,7 +23,7 @@ VSVersionInfo(
                             "FileDescription",
                             "键盘输入助手 — 绕过输入法的 Unicode 直发键盘输入工具",
                         ),
-                        StringStruct("FileVersion", "0.1.0.0"),
+                        StringStruct("FileVersion", "0.2.0.0"),
                         StringStruct("InternalName", "键盘输入助手"),
                         StringStruct(
                             "LegalCopyright",
@@ -31,7 +31,7 @@ VSVersionInfo(
                         ),
                         StringStruct("OriginalFilename", "键盘输入助手.exe"),
                         StringStruct("ProductName", "键盘输入助手"),
-                        StringStruct("ProductVersion", "0.1.0"),
+                        StringStruct("ProductVersion", "0.2.0"),
                         StringStruct(
                             "Comments",
                             "https://github.com/huonanwholovecomputer/auto_input_anywhere",
