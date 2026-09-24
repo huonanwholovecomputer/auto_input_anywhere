@@ -23,6 +23,7 @@ exe = EXE(
     a.datas,
     [],
     name='键盘输入助手',
+    version='version_info.txt',
     debug=False,
     bootloader_ignore_signals=False,
     strip=False,
