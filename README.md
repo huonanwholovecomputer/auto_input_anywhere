@@ -92,6 +92,7 @@ python build_nuitka.py
 - 第一次构建时 Nuitka 会自己下载一份它认可的 MinGW-w64 编译器（约百余 MB，只下一次，之后走缓存），所以需要联网；本机已有的其它 gcc 会被忽略。
 - `zstandard` 是 onefile 的压缩依赖。不装它 Nuitka 也能出包，但体积会从 5.7 MB 涨到 21 MB。
 - exe 的版本信息（0.3.0.0、公司名、说明文字）由 `build_nuitka.py` 里的参数写入；改版本号时和三处保持一致：脚本的 `APP_VERSION`、`version_info.txt`、`build_nuitka.py`。
+- 图标是 `assets/icon.ico`（多尺寸，16→256），由 `python tools/make_icon.py` 生成；打包时会写进 exe 资源，同时随包带一份给窗口标题栏 / 任务栏用。窗口图标在源码直接运行时也能读到，改配色后重跑那个脚本即可。
 
 ### 方式二：PyInstaller（不需要编译器）
 
@@ -100,7 +101,7 @@ pip install pyinstaller
 pyinstaller --distpath dist_pyinstaller 键盘输入助手.spec
 ```
 
-产物在 `dist_pyinstaller/键盘输入助手.exe`。spec 已设置 `console=False`，双击运行不会弹出黑色控制台窗口；版本资源（0.3.0）由 `version_info.txt` 提供。
+产物在 `dist_pyinstaller/键盘输入助手.exe`。spec 已设置 `console=False`，双击运行不会弹出黑色控制台窗口；版本资源（0.3.0）由 `version_info.txt` 提供，图标同样来自 `assets/icon.ico`。
 
 ### 两种方式的实测对比
 

@@ -24,6 +24,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent
 SCRIPT = ROOT / "模拟键盘输入指定内容的脚本.py"
+ICON = ROOT / "assets" / "icon.ico"
 OUTPUT_DIR = ROOT / "dist"
 
 # 下面的名称/版本要和 模拟键盘输入指定内容的脚本.py 里的 APP_NAME/APP_VERSION
@@ -49,6 +50,9 @@ NUITKA_ARGS = [
     f"--product-version={PRODUCT_VERSION}",
     f"--file-description={DESCRIPTION}",
     f"--copyright={COPYRIGHT}",
+    # 图标：写进 exe 资源（资源管理器/任务栏），同时把 ico 带进包内供窗口使用
+    f"--windows-icon-from-ico={ICON}",
+    f"--include-data-files={ICON}=assets/{ICON.name}",
     # 首次构建允许自动下载 MinGW-w64 / depends.exe
     "--assume-yes-for-downloads",
     "--mingw64",
@@ -96,6 +100,10 @@ def _exe_is_locked(path: Path) -> bool:
 def main() -> int:
     if not SCRIPT.exists():
         print(f"找不到主脚本：{SCRIPT}")
+        return 1
+    if not ICON.exists():
+        print(f"找不到图标：{ICON}")
+        print("先生成图标：python tools/make_icon.py")
         return 1
     if not _check_dependencies():
         return 1

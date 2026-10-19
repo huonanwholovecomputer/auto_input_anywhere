@@ -271,6 +271,40 @@ def get_system_dpi():
         return 96
 
 
+def find_icon(name="icon.ico"):
+    """找图标文件。源码运行、PyInstaller 打包、Nuitka 打包三种情况下目录都不同，
+    所以按几个候选位置依次找；找不到就返回 None（不影响程序运行）。"""
+    roots = []
+    meipass = getattr(sys, "_MEIPASS", None)          # PyInstaller onefile
+    if meipass:
+        roots.append(meipass)
+    try:
+        roots.append(os.path.dirname(os.path.abspath(__file__)))
+    except NameError:
+        pass
+    for candidate in (sys.argv[0] if sys.argv else "",
+                      sys.executable or ""):
+        if candidate:
+            roots.append(os.path.dirname(os.path.abspath(candidate)))
+    for root in roots:
+        for rel in (os.path.join("assets", name), name):
+            path = os.path.join(root, rel)
+            if os.path.isfile(path):
+                return path
+    return None
+
+
+def set_taskbar_identity():
+    """给进程一个独立 AppUserModelID：直接跑 python 时任务栏不会再归到 python.exe 上"""
+    if sys.platform != "win32":
+        return
+    try:
+        ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID(
+            f"huonanwholovecomputer.{APP_NAME}.{APP_VERSION}")
+    except Exception:
+        pass
+
+
 def _log_exception(exc, val, tb):
     text = "".join(traceback.format_exception(exc, val, tb))
     try:
@@ -353,8 +387,19 @@ class KeyboardInputApp:
         self.style.configure("Status.TLabel", font=("Microsoft YaHei UI", 9))
         self.style.configure("Primary.TButton", font=("Microsoft YaHei UI", 10, "bold"))
 
+    def _apply_window_icon(self):
+        """把标题栏 / 任务栏图标换成 assets/icon.ico（用 default= 一次性覆盖所有窗口）"""
+        path = find_icon()
+        if not path:
+            return
+        try:
+            self.root.iconbitmap(default=path)
+        except tk.TclError:
+            pass
+
     def _build_ui(self):
         self.root.title(f"{APP_NAME} {APP_VERSION}")
+        self._apply_window_icon()
         width, height = self._s(820), self._s(620)
         self.root.minsize(self._s(560), self._s(430))
         screen_w = self.root.winfo_screenwidth()
@@ -864,6 +909,7 @@ def main():
         print("本程序仅支持 Windows。")
         return 1
     enable_dpi_awareness()
+    set_taskbar_identity()
     root = tk.Tk()
     KeyboardInputApp(root)
     root.mainloop()
